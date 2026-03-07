@@ -1,8 +1,9 @@
-import { createClient } from "@deepgram/sdk";
+import pkg from "@deepgram/sdk";
+const { Deepgram } = pkg;
 import dotenv from "dotenv";
 dotenv.config();
 
-const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+const deepgram = new Deepgram(process.env.DEEPGRAM_API_KEY);
 
 export async function transcribeAudioStream(audioChunks) {
   try {
@@ -19,22 +20,17 @@ export async function transcribeAudioStream(audioChunks) {
       return "";
     }
 
-    const { result, error } = await deepgram.listen.prerecorded.transcribeFile(
-      audioBuffer,
+    const response = await deepgram.transcription.preRecorded(
+      { buffer: audioBuffer, mimetype: "audio/webm" },
       {
-        model: "nova-2",
+        model: "nova",
         language: "en-US",
         smart_format: true,
-        mimetype: "audio/webm",
       }
     );
 
-    if (error) {
-      throw new Error(`Deepgram error: ${error.message}`);
-    }
-
     const transcript =
-      result?.results?.channels?.[0]?.alternatives?.[0]?.transcript || "";
+      response?.results?.channels?.[0]?.alternatives?.[0]?.transcript || "";
 
     console.log(`Transcript: "${transcript}"`);
     return transcript;
