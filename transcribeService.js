@@ -1,4 +1,4 @@
-import { createClient } from "@deepgram/sdk/dist/main/index.js";
+import { createClient } from "@deepgram/sdk/dist/esm/index.mjs";
 import dotenv from "dotenv";
 dotenv.config();
 
