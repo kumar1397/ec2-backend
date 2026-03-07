@@ -142,6 +142,7 @@ wss.on("connection", (ws) => {
         // Frontend sends this to start the interview
         case "start_interview": {
           projectId = message.projectId;
+          console.log(`Received start_interview for project: ${projectId}`);
           personDetails = message.personDetails || {};
           currentIndex = 0;
           conversation = [];

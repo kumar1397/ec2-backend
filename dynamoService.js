@@ -1,24 +1,38 @@
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoDB } from "./awsClients.js";
 import { v4 as uuidv4 } from "uuid";
 
-// Fetch interview questions for a given projectId
+// Fetch interview questions using PK/SK schema
 export async function getProjectQuestions(projectId) {
   const result = await dynamoDB.send(
-    new GetCommand({
+    new QueryCommand({
       TableName: "ResearchData",
-      Key: { projectId },
+      KeyConditionExpression: "PK = :pk",
+      ExpressionAttributeValues: {
+        ":pk": `PROJECT#${projectId}`,
+      },
     })
   );
 
-  if (!result.Item) {
+  if (!result.Items || result.Items.length === 0) {
     throw new Error(`Project not found: ${projectId}`);
   }
 
-  return result.Item.questions; // Array of question strings
+  // Find the METADATA item which has project details
+  const metadata = result.Items.find((item) => item.SK === "METADATA");
+  if (!metadata) {
+    throw new Error(`Project metadata not found: ${projectId}`);
+  }
+
+  // Return questions array
+  if (!metadata.questions || metadata.questions.length === 0) {
+    throw new Error(`No questions found for project: ${projectId}`);
+  }
+
+  return metadata.questions;
 }
 
-// Save a completed interview to the Interviews table
+// Save completed interview
 export async function saveInterview(projectId, personDetails, conversation) {
   const interviewId = uuidv4();
   const timestamp = new Date().toISOString();
@@ -30,7 +44,7 @@ export async function saveInterview(projectId, personDetails, conversation) {
         interviewId,
         projectId,
         personDetails,
-        conversation, // Array of { question, answer }
+        conversation,
         completedAt: timestamp,
       },
     })
