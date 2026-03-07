@@ -30,16 +30,21 @@ export async function getProjectQuestions(projectId) {
 }
 
 export async function saveInterview(projectId, personDetails, conversation) {
-  const respondentId = uuidv4(); // ← matches your table's key
+  const respondentId = uuidv4();
   const timestamp = new Date().toISOString();
 
   await dynamoDB.send(
     new PutCommand({
       TableName: "Interviews",
       Item: {
-        respondentId,  // ← primary key your table expects
+        respondentId,
         projectId,
-        personDetails,
+        name: personDetails.name || "",
+        age: personDetails.age || "",
+        gender: personDetails.gender || "",
+        location: personDetails.location || "",
+        income: personDetails.income || 0,
+        education: personDetails.education || "",
         conversation,
         completedAt: timestamp,
       },
