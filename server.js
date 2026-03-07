@@ -91,17 +91,11 @@ wss.on("connection", (ws) => {
     send("transcribing", { message: "Processing your answer..." });
 
     try {
-      // Build an async generator from buffered chunks for Transcribe
       const chunks = [...audioChunks];
       audioChunks = [];
 
-      async function* audioGenerator() {
-        for (const chunk of chunks) {
-          yield { AudioEvent: { AudioChunk: chunk } };
-        }
-      }
-
-      const transcript = await transcribeAudioStream(audioGenerator());
+      // ✅ Pass raw chunks directly, transcribeService handles conversion
+      const transcript = await transcribeAudioStream(chunks);
       const question = questions[currentIndex];
 
       console.log(`Q: ${question}`);
@@ -115,7 +109,6 @@ wss.on("connection", (ws) => {
         answer: transcript,
       });
 
-      // Move to next question
       await sendQuestion(currentIndex);
     } catch (err) {
       console.error("Transcribe error:", err);
