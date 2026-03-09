@@ -62,7 +62,7 @@ wss.on("connection", (ws) => {
       send("error", { message: "Failed to generate audio for question." });
     }
   }
-
+  
   async function finishInterview() {
     try {
       const respondentId = await saveInterview(projectId, personDetails, conversation);
