@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { getProjectQuestions, saveInterview } from "./dynamoService.js";
 import { synthesizeSpeech } from "./pollyService.js";
 import { transcribeAudioStream } from "./transcribeService.js";
+import { generateAndUploadPDF } from "./pdfService.js";
 
 dotenv.config();
 
@@ -62,19 +63,23 @@ wss.on("connection", (ws) => {
     }
   }
 
-  // Finalize transcript and save to DynamoDB
   async function finishInterview() {
     try {
-      const interviewId = await saveInterview(
-        projectId,
+      const respondentId = await saveInterview(projectId, personDetails, conversation);
+      const downloadUrl = await generateAndUploadPDF(
+        respondentId,
         personDetails,
+        projectId,
         conversation
       );
+
       send("interview_complete", {
-        interviewId,
+        interviewId: respondentId,
         message: "Interview completed successfully!",
+        download_url: downloadUrl,
       });
-      console.log(`Interview saved: ${interviewId}`);
+
+      console.log(`Interview saved: ${respondentId}`);
     } catch (err) {
       console.error("Save error:", err);
       send("error", { message: "Failed to save interview." });

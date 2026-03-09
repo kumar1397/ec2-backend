@@ -16,8 +16,10 @@
     "@aws-sdk/client-transcribe-streaming": "^3.1003.0",
     "@aws-sdk/lib-dynamodb": "^3.1003.0",
     "@deepgram/sdk": "^2.4.0",
+    "aws-sdk": "^2.1693.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "pdfkit": "^0.17.2",
     "uuid": "^13.0.0",
     "ws": "^8.19.0"
   }

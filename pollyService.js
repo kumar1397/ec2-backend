@@ -6,7 +6,7 @@ export async function synthesizeSpeech(text) {
   const command = new SynthesizeSpeechCommand({
     Text: text,
     OutputFormat: "mp3",
-    VoiceId: "Joanna", // Natural US English voice
+    VoiceId: "Joanna", 
     Engine: "neural",
   });
 
