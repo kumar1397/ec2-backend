@@ -21,7 +21,7 @@ export async function generateAndUploadPDF(respondentId, personDetails, projectI
           ContentType: "application/pdf",
         }));
 
-        const downloadUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        const downloadUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`;
         resolve(downloadUrl);
       } catch (err) {
         reject(err);
